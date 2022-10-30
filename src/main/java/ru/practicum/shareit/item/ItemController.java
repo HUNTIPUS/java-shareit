@@ -19,6 +19,7 @@ public class ItemController {
 
     private final ItemService itemService;
     private final UserService userService;
+
     @PostMapping
     public Item createItem(@RequestBody @Valid ItemDto itemDto,
                            @RequestHeader("X-Sharer-User-Id") Integer userId) {
@@ -36,7 +37,7 @@ public class ItemController {
     }
 
     @GetMapping("{itemId}")
-    public Item getItemById(@PathVariable("itemId") Integer itemId){
+    public Item getItemById(@PathVariable("itemId") Integer itemId) {
         return itemService.getItemById(itemId);
     }
 

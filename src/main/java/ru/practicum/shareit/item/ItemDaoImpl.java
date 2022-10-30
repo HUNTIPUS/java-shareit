@@ -26,8 +26,8 @@ public class ItemDaoImpl implements ItemRepository {
     @Override
     public Item updateItem(ItemDto itemDto, Integer userId) {
         Item item = ItemMapper.toItem(itemDto, userId);
-        if(!items.values().stream().filter(x -> x.getOwner().equals(item.getOwner())
-                && x.getId().equals(item.getId())).findFirst().isEmpty()){
+        if (!items.values().stream().filter(x -> x.getOwner().equals(item.getOwner())
+                && x.getId().equals(item.getId())).findFirst().isEmpty()) {
             Item newItem = items.get(item.getId());
             return doUpdateItem(item, newItem);
         } else {

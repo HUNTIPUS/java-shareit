@@ -8,8 +8,12 @@ import java.util.Optional;
 
 public interface ItemRepository {
     Item createItem(ItemDto itemDto, Integer userId);
+
     Item updateItem(ItemDto itemDto, Integer userId);
+
     Optional<Item> getItemById(Integer itemId);
+
     List<Item> getItems(Integer userId);
+
     List<Item> getItemsByText(String text);
 }

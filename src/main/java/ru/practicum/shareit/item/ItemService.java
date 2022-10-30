@@ -18,7 +18,7 @@ public class ItemService {
         return itemRepository.createItem(itemDto, userId);
     }
 
-    public Item updateItem(ItemDto itemDto, Integer userId, Integer itemId){
+    public Item updateItem(ItemDto itemDto, Integer userId, Integer itemId) {
         itemDto.setId(itemId);
         return itemRepository.updateItem(itemDto, userId);
     }
