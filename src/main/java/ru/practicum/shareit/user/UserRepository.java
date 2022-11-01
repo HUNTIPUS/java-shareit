@@ -9,11 +9,11 @@ public interface UserRepository {
 
     User createUser(User user);
 
-    User updateUser(UserDto user);
+    User updateUser(User user);
 
-    Optional<User> getUserById(Integer userId);
+    Optional<User> getUserById(Long userId);
 
     List<User> getUsers();
 
-    void deleteUserById(Integer userId);
+    void deleteUserById(Long userId);
 }

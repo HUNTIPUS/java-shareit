@@ -1,66 +1,65 @@
 package ru.practicum.shareit.item;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exeption.ObjectExcistenceException;
 import ru.practicum.shareit.generate.GenerateId;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Repository
+@RequiredArgsConstructor
 public class ItemDaoImpl implements ItemRepository {
 
-    private Map<Integer, Item> items = new HashMap<>();
-    private GenerateId generateId = new GenerateId();
+    private final Map<Long, Item> items = new HashMap<>();
+    private final Map<Long, List<Item>> userItemIndex = new LinkedHashMap<>();
+    private final GenerateId generateId;
 
     @Override
-    public Item createItem(ItemDto itemDto, Integer userId) {
-        itemDto.setId(generateId.getId());
-        Item item = ItemMapper.toItem(itemDto, userId);
+    public Item createItem(Item item) {
+        item.setId(generateId.getId());
         items.put(item.getId(), item);
+        final List<Item> userItems = userItemIndex.computeIfAbsent(item.getOwner().getId(), k -> new ArrayList<>());
+        userItems.add(item);
+        userItemIndex.put(item.getOwner().getId(), userItems);
         return item;
     }
 
     @Override
-    public Item updateItem(ItemDto itemDto, Integer userId) {
-        Item item = ItemMapper.toItem(itemDto, userId);
-        if (!items.values().stream().filter(x -> x.getOwner().equals(item.getOwner())
-                && x.getId().equals(item.getId())).findFirst().isEmpty()) {
-            Item newItem = items.get(item.getId());
-            return doUpdateItem(item, newItem);
+    public Item updateItem(Item item) {
+        if (items.values().stream().anyMatch(x -> x.getOwner().equals(item.getOwner())
+                && x.getId().equals(item.getId()))) {
+            return doUpdateItem(item, items.get(item.getId()));
         } else {
             throw new ObjectExcistenceException("Ошибка в индексах");
         }
     }
 
     @Override
-    public Optional<Item> getItemById(Integer itemId) {
+    public Optional<Item> getItemById(Long itemId) {
         return Optional.ofNullable(items.get(itemId));
     }
 
     @Override
-    public List<Item> getItems(Integer userId) {
-        return items.values().stream().filter(x -> x.getOwner().equals(userId)).collect(Collectors.toList());
+    public List<Item> getItems(Long userId) {
+        return userItemIndex.get(userId);
     }
 
     @Override
     public List<Item> getItemsByText(String text) {
-        if (!text.isBlank()) {
-            return items.values().stream().filter(x -> (x.getDescription().toLowerCase().contains(text)
-                            || x.getName().toLowerCase().contains(text)) && x.getAvailable().equals(true))
-                    .collect(Collectors.toList());
-        } else {
-            return new ArrayList<>();
-        }
+        return items.values().stream().filter(x -> (x.getDescription().toLowerCase().contains(text)
+                        || x.getName().toLowerCase().contains(text)) && x.getAvailable().equals(true))
+                .collect(Collectors.toList());
+
     }
 
     private Item doUpdateItem(Item item, Item newItem) {
-        if (item.getName() != null) {
+        if (item.getName() != null && !item.getName().isBlank()) {
             newItem.setName(item.getName());
         }
-        if (item.getDescription() != null) {
+        if (item.getDescription() != null && !item.getDescription().isBlank()) {
             newItem.setDescription(item.getDescription());
         }
         if (item.getAvailable() != null) {

@@ -3,9 +3,8 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.exeption.ValidationException;
+import ru.practicum.shareit.exeption.DublicateEmailException;
 import ru.practicum.shareit.generate.GenerateId;
-import ru.practicum.shareit.user.dto.UserDto;
 
 import java.util.*;
 
@@ -14,8 +13,8 @@ import java.util.*;
 @Slf4j
 public class UserDaoImpl implements UserRepository {
 
-    private Map<Integer, User> users = new HashMap<>();
-    private GenerateId generateId = new GenerateId();
+    private final Map<Long, User> users = new HashMap<>();
+    private final GenerateId generateId;
 
     @Override
     public User createUser(User user) {
@@ -24,31 +23,23 @@ public class UserDaoImpl implements UserRepository {
             users.put(user.getId(), user);
             return user;
         } else {
-            throw new ValidationException("Ошибка валидации");
+            throw new DublicateEmailException("Такой email уже занят");
         }
     }
 
     @Override
-    public User updateUser(UserDto userDto) {
-        User user = UserMapper.toUser(userDto);
-        if (users.values().stream().filter(x -> x.getEmail().equals(user.getEmail())).findFirst().isEmpty()) {
-            User userNew = users.get(user.getId());
-            if (user.getName() == null && user.getEmail() != null) {
-                userNew.setEmail(user.getEmail());
-                return userNew;
-            } else if (user.getName() != null && user.getEmail() == null) {
-                userNew.setName(user.getName());
-                return userNew;
-            } else if (user.getName() != null && user.getEmail() != null) {
-                users.put(user.getId(), user);
-                return user;
-            }
+    public User updateUser(User user) {
+        if (users.get(user.getId()).getEmail().equals(user.getEmail())) {
+            return doUpdateUser(user, users.get(user.getId()));
         }
-        throw new ValidationException("Ошибка валидации");
+        if (users.values().stream().noneMatch(x -> x.getEmail().equals(user.getEmail()))) {
+            return doUpdateUser(user, users.get(user.getId()));
+        }
+        throw new DublicateEmailException("Такой email уже занят");
     }
 
     @Override
-    public Optional<User> getUserById(Integer userId) {
+    public Optional<User> getUserById(Long userId) {
         return Optional.ofNullable(users.get(userId));
     }
 
@@ -58,8 +49,17 @@ public class UserDaoImpl implements UserRepository {
     }
 
     @Override
-    public void deleteUserById(Integer userId) {
+    public void deleteUserById(Long userId) {
         users.remove(userId);
     }
 
+    private User doUpdateUser(User user, User newUser) {
+        if (user.getName() != null && !user.getName().isBlank()) {
+            newUser.setName(user.getName());
+        }
+        if (user.getEmail() != null && !user.getEmail().isBlank()) {
+            newUser.setEmail(user.getEmail());
+        }
+        return newUser;
+    }
 }
