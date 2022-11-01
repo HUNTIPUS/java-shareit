@@ -21,16 +21,16 @@ public class ItemController {
     @PostMapping
     public ItemDto createItem(@RequestBody @Validated(Create.class) ItemDto itemDto,
                               @RequestHeader("X-Sharer-User-Id") Long userId) {
-        return ItemMapper.toItemDto(itemService.
-                createItem(ItemMapper.toItem(itemDto, userService.getUserById(userId)), userId));
+        return ItemMapper.toItemDto(itemService
+                .createItem(ItemMapper.toItem(itemDto, userService.getUserById(userId)), userId));
     }
 
     @PatchMapping("/{itemId}")
     public ItemDto updateItem(@RequestBody ItemDto itemDto,
                               @RequestHeader("X-Sharer-User-Id") Long userId,
                               @PathVariable("itemId") Long itemId) {
-        return ItemMapper.toItemDto(itemService.
-                updateItem(itemDto, userId, itemId));
+        return ItemMapper.toItemDto(itemService
+                .updateItem(itemDto, userId, itemId));
     }
 
     @GetMapping("{itemId}")
