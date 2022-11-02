@@ -18,7 +18,7 @@ public class ItemDaoImpl implements ItemRepository {
     private final GenerateId generateId;
 
     @Override
-    public Item createItem(Item item) {
+    public Item create(Item item) {
         item.setId(generateId.getId());
         items.put(item.getId(), item);
         final List<Item> userItems = userItemIndex.computeIfAbsent(item.getOwner().getId(), k -> new ArrayList<>());
@@ -28,34 +28,34 @@ public class ItemDaoImpl implements ItemRepository {
     }
 
     @Override
-    public Item updateItem(Item item) {
+    public Item update(Item item) {
         if (items.values().stream().anyMatch(x -> x.getOwner().equals(item.getOwner())
                 && x.getId().equals(item.getId()))) {
-            return doUpdateItem(item, items.get(item.getId()));
+            return doUpdate(item, items.get(item.getId()));
         } else {
             throw new ObjectExcistenceException("Ошибка в индексах");
         }
     }
 
     @Override
-    public Optional<Item> getItemById(Long itemId) {
+    public Optional<Item> getById(Long itemId) {
         return Optional.ofNullable(items.get(itemId));
     }
 
     @Override
-    public List<Item> getItems(Long userId) {
+    public List<Item> getAll(Long userId) {
         return userItemIndex.get(userId);
     }
 
     @Override
-    public List<Item> getItemsByText(String text) {
+    public List<Item> getByText(String text) {
         return items.values().stream().filter(x -> (x.getDescription().toLowerCase().contains(text)
                         || x.getName().toLowerCase().contains(text)) && x.getAvailable().equals(true))
                 .collect(Collectors.toList());
 
     }
 
-    private Item doUpdateItem(Item item, Item newItem) {
+    private Item doUpdate(Item item, Item newItem) {
         if (item.getName() != null && !item.getName().isBlank()) {
             newItem.setName(item.getName());
         }

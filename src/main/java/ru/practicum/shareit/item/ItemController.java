@@ -5,10 +5,9 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.Create;
-import ru.practicum.shareit.user.UserService;
+import ru.practicum.shareit.user.Update;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/items")
@@ -16,21 +15,20 @@ import java.util.stream.Collectors;
 public class ItemController {
 
     private final ItemService itemService;
-    private final UserService userService;
 
     @PostMapping
-    public ItemDto createItem(@RequestBody @Validated(Create.class) ItemDto itemDto,
+    public ItemDto create(@RequestBody @Validated(Create.class) ItemDto itemDto,
                               @RequestHeader("X-Sharer-User-Id") Long userId) {
         return ItemMapper.toItemDto(itemService
-                .createItem(ItemMapper.toItem(itemDto, userService.getUserById(userId)), userId));
+                .create(itemDto, userId));
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@RequestBody ItemDto itemDto,
+    public ItemDto update(@RequestBody @Validated(Update.class) ItemDto itemDto,
                               @RequestHeader("X-Sharer-User-Id") Long userId,
                               @PathVariable("itemId") Long itemId) {
         return ItemMapper.toItemDto(itemService
-                .updateItem(itemDto, userId, itemId));
+                .update(itemDto, userId, itemId));
     }
 
     @GetMapping("{itemId}")
@@ -40,10 +38,7 @@ public class ItemController {
 
     @GetMapping
     public List<ItemDto> getItems(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemService.getItems(userId)
-                .stream()
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+        return ItemMapper.toListItemDto(itemService.getAll(userId));
     }
 
     @GetMapping("/search")
@@ -51,10 +46,7 @@ public class ItemController {
         if (text.isBlank()) {
             return List.of();
         } else {
-            return itemService.getItemsByText(text.toLowerCase())
-                    .stream()
-                    .map(ItemMapper::toItemDto)
-                    .collect(Collectors.toList());
+            return ItemMapper.toListItemDto(itemService.getByText(text.toLowerCase()));
         }
     }
 }

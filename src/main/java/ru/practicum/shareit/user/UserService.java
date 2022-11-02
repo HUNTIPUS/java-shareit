@@ -11,25 +11,25 @@ import java.util.List;
 public class UserService {
     private final UserRepository userRepository;
 
-    public User createUser(User user) {
-        return userRepository.createUser(user);
+    public User create(User user) {
+        return userRepository.create(user);
     }
 
-    public User updateUser(User user) {
-        getUserById(user.getId());
-        return userRepository.updateUser(user);
+    public User update(User user) {
+        getById(user.getId());
+        return userRepository.update(user);
     }
 
-    public List<User> getUsers() {
-        return userRepository.getUsers();
+    public List<User> getAll() {
+        return userRepository.getAll();
     }
 
-    public User getUserById(Long userId) {
-        return userRepository.getUserById(userId)
+    public User getById(Long userId) {
+        return userRepository.getById(userId)
                 .orElseThrow(() -> new ObjectExcistenceException("Пользователь не существует"));
     }
 
-    public void deleteUserById(Long userId) {
-        userRepository.deleteUserById(userId);
+    public void deleteById(Long userId) {
+        userRepository.deleteById(userId);
     }
 }

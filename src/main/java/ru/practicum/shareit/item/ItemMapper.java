@@ -6,6 +6,10 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ItemMapper {
     public static ItemDto toItemDto(Item item) {
@@ -27,6 +31,13 @@ public class ItemMapper {
                 user,
                 itemDto.getRequest()
         );
+    }
+
+    public static List<ItemDto> toListItemDto(List<Item> items) {
+        return items
+                .stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 
 

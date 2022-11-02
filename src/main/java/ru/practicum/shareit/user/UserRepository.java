@@ -5,13 +5,13 @@ import java.util.Optional;
 
 public interface UserRepository {
 
-    User createUser(User user);
+    User create(User user);
 
-    User updateUser(User user);
+    User update(User user);
 
-    Optional<User> getUserById(Long userId);
+    Optional<User> getById(Long userId);
 
-    List<User> getUsers();
+    List<User> getAll();
 
-    void deleteUserById(Long userId);
+    void deleteById(Long userId);
 }

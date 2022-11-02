@@ -16,28 +16,26 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final UserService userService;
 
-    public Item createItem(Item item, Long userId) {
-        item.setOwner(userService.getUserById(userId));
-        return itemRepository.createItem(item);
+    public Item create(ItemDto itemDto, Long userId) {
+        return itemRepository.create(ItemMapper.toItem(itemDto, userService.getById(userId)));
     }
 
-    public Item updateItem(ItemDto itemDto, Long userId, Long itemId) {
-        userService.getUserById(userId);
+    public Item update(ItemDto itemDto, Long userId, Long itemId) {
         getItemById(itemId);
         itemDto.setId(itemId);
-        return itemRepository.updateItem(ItemMapper.toItem(itemDto, userService.getUserById(userId)));
+        return itemRepository.update(ItemMapper.toItem(itemDto, userService.getById(userId)));
     }
 
     public Item getItemById(Long itemId) {
-        return itemRepository.getItemById(itemId)
+        return itemRepository.getById(itemId)
                 .orElseThrow(() -> new ObjectExcistenceException("Вещи c таким id не существует"));
     }
 
-    public List<Item> getItems(Long userId) {
-        return itemRepository.getItems(userId);
+    public List<Item> getAll(Long userId) {
+        return itemRepository.getAll(userId);
     }
 
-    public List<Item> getItemsByText(String text) {
-        return itemRepository.getItemsByText(text);
+    public List<Item> getByText(String text) {
+        return itemRepository.getByText(text);
     }
 }
