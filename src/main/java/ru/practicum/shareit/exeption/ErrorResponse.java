@@ -1,6 +1,10 @@
 package ru.practicum.shareit.exeption;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
+@Data
+@AllArgsConstructor
 public class ErrorResponse {
-    public ErrorResponse(String error) {
-    }
+    private final String error;
 }
