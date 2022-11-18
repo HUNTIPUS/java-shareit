@@ -24,9 +24,9 @@ public class ExceptionHandlers {
     }
 
     @ExceptionHandler
-    public ResponseEntity<String> exc(Throwable ex) {
+    public ResponseEntity<ErrorResponse> exc(Throwable ex) {
         log.info("Код ошибки: 500");
-        return new ResponseEntity<>("Поймано необработанное исключение", HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler

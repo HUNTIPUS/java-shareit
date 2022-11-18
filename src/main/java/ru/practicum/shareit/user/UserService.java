@@ -1,35 +1,15 @@
 package ru.practicum.shareit.user;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exeption.ObjectExcistenceException;
-
 import java.util.List;
 
-@Service
-@RequiredArgsConstructor
-public class UserService {
-    private final UserRepository userRepository;
+public interface UserService {
+    User create(User user);
 
-    public User create(User user) {
-        return userRepository.create(user);
-    }
+    User update(User user);
 
-    public User update(User user) {
-        getById(user.getId());
-        return userRepository.update(user);
-    }
+    User getById(Long userId);
 
-    public List<User> getAll() {
-        return userRepository.getAll();
-    }
+    List<User> getAll();
 
-    public User getById(Long userId) {
-        return userRepository.getById(userId)
-                .orElseThrow(() -> new ObjectExcistenceException("Пользователь не существует"));
-    }
-
-    public void deleteById(Long userId) {
-        userRepository.deleteById(userId);
-    }
+    void deleteById(Long userId);
 }

@@ -1,41 +1,18 @@
 package ru.practicum.shareit.item;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import ru.practicum.shareit.exeption.ObjectExcistenceException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserService;
 
 import java.util.List;
 
-@Service
-@RequiredArgsConstructor
-public class ItemService {
+public interface ItemService {
+    Item create(ItemDto itemDto, Long userId);
 
-    private final ItemRepository itemRepository;
-    private final UserService userService;
+    Item update(ItemDto itemDto, Long userId);
 
-    public Item create(ItemDto itemDto, Long userId) {
-        return itemRepository.create(ItemMapper.toItem(itemDto, userService.getById(userId)));
-    }
+    ItemDto getById(Long itemId, Long ownerId);
 
-    public Item update(ItemDto itemDto, Long userId, Long itemId) {
-        getItemById(itemId);
-        itemDto.setId(itemId);
-        return itemRepository.update(ItemMapper.toItem(itemDto, userService.getById(userId)));
-    }
+    List<ItemDto> getAll(Long userId);
 
-    public Item getItemById(Long itemId) {
-        return itemRepository.getById(itemId)
-                .orElseThrow(() -> new ObjectExcistenceException("Вещи c таким id не существует"));
-    }
-
-    public List<Item> getAll(Long userId) {
-        return itemRepository.getAll(userId);
-    }
-
-    public List<Item> getByText(String text) {
-        return itemRepository.getByText(text);
-    }
+    List<Item> getByText(String text);
 }
