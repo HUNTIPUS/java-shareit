@@ -1,13 +1,16 @@
 package ru.practicum.shareit.booking;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "booking", schema = "public")
-@Data
+@Table(name = "booking")
+@Getter
+@Setter
 public class Booking {
 
     @Id

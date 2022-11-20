@@ -1,12 +1,15 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "items", schema = "public")
-@Data
+@Table(name = "items")
+@Getter
+@Setter
 public class Item {
 
     @Id

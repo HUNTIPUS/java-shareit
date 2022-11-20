@@ -1,13 +1,16 @@
 package ru.practicum.shareit.comments.model;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "comments", schema = "public")
-@Data
+@Table(name = "comments")
+@Getter
+@Setter
 public class Comment {
 
     @Id
