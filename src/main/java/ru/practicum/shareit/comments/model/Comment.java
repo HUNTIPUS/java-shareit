@@ -1,6 +1,5 @@
 package ru.practicum.shareit.comments.model;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
