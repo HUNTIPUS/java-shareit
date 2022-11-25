@@ -101,6 +101,7 @@ public class ItemServiceImpl implements ItemService {
         }
         return itemDto;
     }
+
     private ItemDtoOutput appendCommentsToItem(ItemDtoOutput itemDto, List<Comment> comments) {
         itemDto.setComments(CommentMapper.toListItemCommentDto(comments));
         return itemDto;

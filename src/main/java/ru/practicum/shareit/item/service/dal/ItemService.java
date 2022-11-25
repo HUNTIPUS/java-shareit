@@ -16,5 +16,6 @@ public interface ItemService {
     List<ItemDtoOutput> getAll(Long userId);
 
     List<ItemDtoOutput> getByText(String text);
+
     Item getByIdForItem(Long itemId);
 }

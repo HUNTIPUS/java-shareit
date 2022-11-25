@@ -134,6 +134,7 @@ public class BookingServiceImpl implements BookingService {
         }
         return BookingMapper.toBookingDtoList(bookings);
     }
+
     @Override
     public Booking getByIdForBooking(Long bookingId) {
         return bookingRepository.findById(bookingId)
