@@ -20,7 +20,6 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.dal.UserService;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
