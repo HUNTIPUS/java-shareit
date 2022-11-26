@@ -4,6 +4,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.item.model.Item;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -64,5 +65,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("select b from Booking b")
     List<Booking> findAll(Sort sort);
 
-
+    @Query("select b from Booking b where b.status = 'APPROVED' " +
+            "and b.item in ?1 ")
+    List<Booking> findApprovedForItems(List<Item> items, Sort sort);
 }

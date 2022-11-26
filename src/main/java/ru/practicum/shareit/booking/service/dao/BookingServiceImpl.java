@@ -84,7 +84,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDtoOutput> getAllByOwner(Long id, String state) {
         userService.getById(id);
-        List<Booking> bookings = new ArrayList<>();
+        List<Booking> bookings = List.of();
         switch (State.States.getState(state)) {
             case ALL:
                 bookings = bookingRepository.getAllByOwnerAll(id, sort);
@@ -111,7 +111,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDtoOutput> getAllByBooker(Long id, String state) {
         userService.getById(id);
-        List<Booking> bookings = new ArrayList<>();
+        List<Booking> bookings = List.of();
         switch (State.States.getState(state)) {
             case ALL:
                 bookings = bookingRepository.getAllByBookerAll(id, sort);

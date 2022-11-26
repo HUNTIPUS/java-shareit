@@ -15,10 +15,10 @@ public class BookingDtoInput {
 
     private Long id;
     @FutureOrPresent(groups = {Create.class})
-    @NotNull
+    @NotNull(groups = {Create.class})
     private LocalDateTime start;
     @Future(groups = {Create.class})
-    @NotNull
+    @NotNull(groups = {Create.class})
     private LocalDateTime end;
     private Long itemId;
 }

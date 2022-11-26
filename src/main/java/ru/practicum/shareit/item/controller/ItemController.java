@@ -37,20 +37,20 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDtoOutput getItemById(@PathVariable("itemId") Long itemId,
-                                     @RequestHeader("X-Sharer-User-Id") Long ownerId) {
+    public ItemDtoOutput getById(@PathVariable("itemId") Long itemId,
+                                 @RequestHeader("X-Sharer-User-Id") Long ownerId) {
         return itemService.getById(itemId, ownerId);
     }
 
     @GetMapping
-    public List<ItemDtoOutput> getItems(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ItemDtoOutput> getAll(@RequestHeader("X-Sharer-User-Id") Long userId) {
         return itemService.getAll(userId);
     }
 
     @GetMapping("/search")
-    public List<ItemDtoOutput> getItemsByText(@RequestParam("text") String text) {
+    public List<ItemDtoOutput> getByText(@RequestParam("text") String text) {
         if (text.isBlank()) {
-        return List.of();
+            return List.of();
         } else {
             return itemService.getByText(text.toLowerCase());
         }
