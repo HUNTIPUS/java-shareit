@@ -20,6 +20,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.dal.UserService;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -64,18 +65,36 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDtoOutput getById(Long itemId, Long ownerId) {
-        Item item = getByIdForItem(itemId);
-        ItemDtoOutput itemDto = appendBookingToItem(item, getApprovedBookings(ownerId));
-        return appendCommentsToItem(itemDto, getComments());
+        List<Item> items = new ArrayList<>();
+        items.add(getByIdForItem(itemId));
+        Map<Item, List<Booking>> approvedBookings = getApprovedBookings(items);
+        Map<Item, List<Comment>> comments = getComments(items);
+        if (items.get(0).getOwner().getId().equals(ownerId)) {
+            return appendCommentsToItem(appendBookingToItem(items.get(0),
+                            approvedBookings.getOrDefault(items.get(0), Collections.emptyList())),
+                    comments.getOrDefault(items.get(0), Collections.emptyList()));
+        }
+        return appendCommentsToItem(ItemMapper.toItemDto(items.get(0)),
+                comments.getOrDefault(items.get(0), Collections.emptyList()));
     }
 
     @Override
     public List<ItemDtoOutput> getAll(Long userId) {
-        return ItemMapper.toItemDtoList(itemRepository.getAll(userId))
-                .stream()
-                .map(i -> appendBookingToItem(getByIdForItem(i.getId()), getApprovedBookings(userId)))
-                .map(i -> appendCommentsToItem(i,  getComments()))
-                .collect(toList());
+        List<Item> items = itemRepository.getAll(userId);
+        Map<Item, List<Booking>> approvedBookings = getApprovedBookings(items);
+        Map<Item, List<Comment>> comments = getComments(items);
+        List<ItemDtoOutput> itemDtoOutputList = new ArrayList<>();
+        for (Item item : items) {
+            if (item.getOwner().getId().equals(userId)) {
+                itemDtoOutputList.add(appendCommentsToItem(appendBookingToItem(item,
+                                approvedBookings.getOrDefault(item, Collections.emptyList())),
+                        comments.getOrDefault(item, Collections.emptyList())));
+            } else {
+                itemDtoOutputList.add(appendCommentsToItem(ItemMapper.toItemDto(item),
+                        comments.getOrDefault(item, Collections.emptyList())));
+            }
+        }
+        return itemDtoOutputList;
     }
 
     @Override
@@ -83,16 +102,15 @@ public class ItemServiceImpl implements ItemService {
         return ItemMapper.toItemDtoList(itemRepository.getByText(text));
     }
 
-    private Map<Item, List<Booking>> getApprovedBookings(Long userId) {
+    private Map<Item, List<Booking>> getApprovedBookings(List<Item> items) {
         return bookingRepository.findApprovedForItems(
-                        itemRepository.getAll(userId), Sort.by(DESC, "start"))
+                        items, Sort.by(DESC, "start"))
                 .stream()
                 .collect(groupingBy(Booking::getItem, toList()));
     }
 
-    public ItemDtoOutput appendBookingToItem(Item item, Map<Item, List<Booking>> approvedBookings) {
+    public ItemDtoOutput appendBookingToItem(Item item, List<Booking> bookings) {
         ItemDtoOutput itemDto = ItemMapper.toItemDto(item);
-        List<Booking> bookings = approvedBookings.getOrDefault(item, Collections.emptyList());
         LocalDateTime now = LocalDateTime.now();
         Booking lastBooking = bookings.stream()
                 .filter(b -> ((b.getEnd().isEqual(now) || b.getEnd().isBefore(now))
@@ -119,15 +137,13 @@ public class ItemServiceImpl implements ItemService {
         return itemDto;
     }
 
-    public ItemDtoOutput appendCommentsToItem(ItemDtoOutput itemDto, Map<Item, List<Comment>> commentsForItem) {
-        Item item = getByIdForItem(itemDto.getId());
-        List<Comment> comments = commentsForItem.getOrDefault(item, Collections.emptyList());
+    public ItemDtoOutput appendCommentsToItem(ItemDtoOutput itemDto, List<Comment> comments) {
         itemDto.setComments(CommentMapper.toListItemCommentDto(comments));
         return itemDto;
     }
 
-    private Map<Item, List<Comment>> getComments() {
-        return commentRepository.findCommentForItems(itemRepository.findAll())
+    private Map<Item, List<Comment>> getComments(List<Item> items) {
+        return commentRepository.findCommentForItems(items)
                 .stream()
                 .collect(groupingBy(Comment::getItem, toList()));
     }
