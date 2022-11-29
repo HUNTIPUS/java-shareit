@@ -57,7 +57,6 @@ public class ItemServiceImpl implements ItemService {
         if (item.getOwner().getId().equals(userId)) {
             itemNew = updateItemIfParamIsNull(itemNew);
             return getById(itemNew.getId(), itemNew.getOwner().getId());
-
         } else {
             throw new ObjectExcistenceException("У этого инструмента другой владелец");
         }
@@ -85,14 +84,9 @@ public class ItemServiceImpl implements ItemService {
         Map<Item, List<Comment>> comments = getComments(items);
         List<ItemDtoOutput> itemDtoOutputList = new ArrayList<>();
         for (Item item : items) {
-            if (item.getOwner().getId().equals(userId)) {
-                itemDtoOutputList.add(appendCommentsToItem(appendBookingToItem(item,
-                                approvedBookings.getOrDefault(item, Collections.emptyList())),
-                        comments.getOrDefault(item, Collections.emptyList())));
-            } else {
-                itemDtoOutputList.add(appendCommentsToItem(ItemMapper.toItemDto(item),
-                        comments.getOrDefault(item, Collections.emptyList())));
-            }
+            itemDtoOutputList.add(appendCommentsToItem(appendBookingToItem(item,
+                            approvedBookings.getOrDefault(item, Collections.emptyList())),
+                    comments.getOrDefault(item, Collections.emptyList())));
         }
         return itemDtoOutputList;
     }
