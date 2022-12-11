@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service.dao;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,7 @@ import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.service.dal.ItemService;
+import ru.practicum.shareit.request.repository.RequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.dal.UserService;
 
@@ -38,6 +40,7 @@ public class ItemServiceImpl implements ItemService {
     private final UserService userService;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final RequestRepository requestRepository;
 
 
     @Override
@@ -46,12 +49,16 @@ public class ItemServiceImpl implements ItemService {
         User user = userService.getById(userId);
         Item item = itemRepository.save(ItemMapper.toItem(itemDto));
         item.setOwner(user);
+        if (itemDto.getRequestId() != null) {
+            item.setRequest(requestRepository.getReferenceById(itemDto.getRequestId()));
+        }
         return ItemMapper.toItemDto(item);
     }
 
     @Override
     @Transactional
     public ItemDtoOutput update(ItemDtoInput itemDto, Long userId) {
+        userService.getById(userId);
         Item item = getByIdForItem(itemDto.getId());
         Item itemNew = ItemMapper.toItem(itemDto);
         if (item.getOwner().getId().equals(userId)) {
@@ -64,6 +71,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDtoOutput getById(Long itemId, Long ownerId) {
+        userService.getById(ownerId);
         List<Item> items = new ArrayList<>();
         items.add(getByIdForItem(itemId));
         Map<Item, List<Booking>> approvedBookings = getApprovedBookings(items);
@@ -78,8 +86,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoOutput> getAll(Long userId) {
-        List<Item> items = itemRepository.getAll(userId);
+    public List<ItemDtoOutput> getAll(Long userId, Integer from, Integer size) {
+        userService.getById(userId);
+        List<Item> items = itemRepository.getAll(userId, PageRequest.of(from > 0 ? from / size : 0,
+                size, Sort.unsorted()));
         Map<Item, List<Booking>> approvedBookings = getApprovedBookings(items);
         Map<Item, List<Comment>> comments = getComments(items);
         List<ItemDtoOutput> itemDtoOutputList = new ArrayList<>();
@@ -92,8 +102,15 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoOutput> getByText(String text) {
-        return ItemMapper.toItemDtoList(itemRepository.getByText(text));
+    public List<ItemDtoOutput> getByText(String text, Integer from, Integer size) {
+        return ItemMapper.toItemDtoList(itemRepository.getByText(text, PageRequest.of(from > 0 ? from / size : 0,
+                size, Sort.unsorted())));
+    }
+
+    @Override
+    public Item getByIdForItem(Long itemId) {
+        return itemRepository.findById(itemId)
+                .orElseThrow(() -> new ObjectExcistenceException("Инструмент не сущестует"));
     }
 
     private Map<Item, List<Booking>> getApprovedBookings(List<Item> items) {
@@ -142,12 +159,6 @@ public class ItemServiceImpl implements ItemService {
                 .collect(groupingBy(Comment::getItem, toList()));
     }
 
-    @Override
-    public Item getByIdForItem(Long itemId) {
-        return itemRepository.findById(itemId)
-                .orElseThrow(() -> new ObjectExcistenceException("Инструмент не сущестует"));
-    }
-
     private Item updateItemIfParamIsNull(Item item) {
         Item itemNew = getByIdForItem(item.getId());
         if (item.getName() != null && !item.getName().isBlank()) {
@@ -159,8 +170,8 @@ public class ItemServiceImpl implements ItemService {
         if (item.getAvailable() != null) {
             itemNew.setAvailable(item.getAvailable());
         }
-        if (item.getRequestId() != null) {
-            itemNew.setRequestId(item.getRequestId());
+        if (item.getRequest() != null) {
+            itemNew.setRequest(item.getRequest());
         }
         return itemNew;
     }
