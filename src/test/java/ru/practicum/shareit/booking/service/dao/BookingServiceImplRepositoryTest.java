@@ -132,6 +132,7 @@ class BookingServiceImplRepositoryTest {
         assertEquals(1, bookings.size());
         assertEquals(booking.getId(), bookings.get(0).getId());
     }
+
     @Test
     void getAllByBookerPast() {
         List<Booking> bookings = bookingRepository.getAllByBookerPast(booker.getId(), LocalDateTime.now(),
@@ -139,6 +140,7 @@ class BookingServiceImplRepositoryTest {
 
         assertThat(bookings).isEmpty();
     }
+
     @Test
     void getAllByBookerFuture() {
         List<Booking> bookings = bookingRepository.getAllByBookerFuture(booker.getId(),
@@ -147,6 +149,7 @@ class BookingServiceImplRepositoryTest {
         assertEquals(1, bookings.size());
         assertEquals(booking.getId(), bookings.get(0).getId());
     }
+
     @Test
     void getAllByBookerCurrent() {
         List<Booking> bookings = bookingRepository.getAllByBookerCurrent(booker.getId(), LocalDateTime.now(),
