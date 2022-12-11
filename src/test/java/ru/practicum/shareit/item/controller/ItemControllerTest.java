@@ -46,7 +46,6 @@ class ItemControllerTest {
     private User owner;
     private User requestor;
     private Item item;
-    private ItemRequest request;
     private ItemDtoInput itemDtoInput;
     private Comment comment;
     private Booking booking;
@@ -63,7 +62,7 @@ class ItemControllerTest {
         owner.setName("Юля");
         owner.setEmail("jul@yandex.ru");
 
-        request = new ItemRequest();
+        ItemRequest request = new ItemRequest();
         request.setId(1L);
         request.setCreated(LocalDateTime.of(2022, 12, 7, 8, 0));
         request.setDescriptionRequest("Хочу теннисный мячик");

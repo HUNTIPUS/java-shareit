@@ -36,9 +36,7 @@ class BookingServiceImplRepositoryTest {
 
     private User booker;
     private User owner;
-    private Item item;
     private Booking booking;
-    private Comment comment;
 
     @BeforeEach
     void setUp() {
@@ -52,7 +50,7 @@ class BookingServiceImplRepositoryTest {
         owner.setEmail("jul@yandex.ru");
         userRepository.save(owner);
 
-        item = new Item();
+        Item item = new Item();
         item.setOwner(owner);
         item.setName("Мячик");
         item.setAvailable(true);
@@ -67,7 +65,7 @@ class BookingServiceImplRepositoryTest {
         booking.setItem(item);
         bookingRepository.save(booking);
 
-        comment = new Comment();
+        Comment comment = new Comment();
         comment.setAuthor(booker);
         comment.setItem(item);
         comment.setCreated(LocalDateTime.of(2022, 12, 9, 12, 0));

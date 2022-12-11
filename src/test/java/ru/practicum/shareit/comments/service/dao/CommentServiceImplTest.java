@@ -37,7 +37,6 @@ class CommentServiceImplTest {
     @Mock
     private BookingRepository bookingRepository;
     private User booker;
-    private User owner;
     private Item item;
     private Booking booking;
     private Comment comment;
@@ -51,7 +50,7 @@ class CommentServiceImplTest {
         booker.setName("Чича");
         booker.setEmail("koti@yandex.ru");
 
-        owner = new User();
+        User owner = new User();
         owner.setId(2L);
         owner.setName("Юля");
         owner.setEmail("jul@yandex.ru");

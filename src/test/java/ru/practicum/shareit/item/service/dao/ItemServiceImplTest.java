@@ -47,7 +47,6 @@ class ItemServiceImplTest {
     @Mock
     private RequestRepository requestRepository;
     private User owner;
-    private User requestor;
     private Item item;
     private ItemRequest request;
     private ItemDtoInput itemDtoInput;
@@ -59,7 +58,7 @@ class ItemServiceImplTest {
         itemService = new ItemServiceImpl(itemRepository, userService, bookingRepository, commentRepository,
                 requestRepository);
 
-        requestor = new User();
+        User requestor = new User();
         requestor.setId(1L);
         requestor.setName("Чича");
         requestor.setEmail("koti@yandex.ru");

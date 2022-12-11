@@ -38,12 +38,8 @@ class CommentServiceImplTestIntegration {
     private final UserService userService;
     private final ItemService itemService;
     private final BookingService bookingService;
-    private User ownerNew;
     private User bookerNew;
-    private ItemDtoInput itemDtoInput;
-    private BookingDtoInput bookingDtoInput;
     private ItemDtoOutput itemDtoOutput;
-    private BookingDtoOutput bookingDtoOutput;
     private CommentDto commentDto;
 
     @BeforeEach
@@ -51,24 +47,24 @@ class CommentServiceImplTestIntegration {
         User owner = new User();
         owner.setName("Юля");
         owner.setEmail("jul@yandex.ru");
-        ownerNew = userService.create(owner);
+        User ownerNew = userService.create(owner);
 
         User booker = new User();
         booker.setName("Чича");
         booker.setEmail("koti@yandex.ru");
         bookerNew = userService.create(booker);
 
-        itemDtoInput = new ItemDtoInput();
+        ItemDtoInput itemDtoInput = new ItemDtoInput();
         itemDtoInput.setName("Мячик");
         itemDtoInput.setDescription("Теннисный мячик");
         itemDtoInput.setAvailable(true);
         itemDtoOutput = itemService.create(itemDtoInput, ownerNew.getId());
 
-        bookingDtoInput = new BookingDtoInput();
+        BookingDtoInput bookingDtoInput = new BookingDtoInput();
         bookingDtoInput.setItemId(itemDtoOutput.getId());
         bookingDtoInput.setStart(LocalDateTime.of(2022, 12, 8, 8, 0));
         bookingDtoInput.setEnd(LocalDateTime.of(2022, 12, 9, 8, 0));
-        bookingDtoOutput = bookingService.create(bookingDtoInput, bookerNew.getId());
+        BookingDtoOutput bookingDtoOutput = bookingService.create(bookingDtoInput, bookerNew.getId());
         bookingService.update(bookingDtoOutput.getId(), ownerNew.getId(), true);
 
         commentDto = new CommentDto();

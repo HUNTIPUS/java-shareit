@@ -38,7 +38,6 @@ class RequestServiceImplTest {
     private UserService userService;
     @Mock
     private ItemRepository itemRepository;
-    private User owner;
     private User requestor;
     private Item item;
     private ItemRequest request;
@@ -52,7 +51,7 @@ class RequestServiceImplTest {
         requestor.setName("Чича");
         requestor.setEmail("koti@yandex.ru");
 
-        owner = new User();
+        User owner = new User();
         owner.setId(2L);
         owner.setName("Юля");
         owner.setEmail("jul@yandex.ru");

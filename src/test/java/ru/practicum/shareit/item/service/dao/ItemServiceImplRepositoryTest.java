@@ -27,14 +27,13 @@ class ItemServiceImplRepositoryTest {
     private ItemRepository itemRepository;
     @Autowired
     private RequestRepository requestRepository;
-    private User booker;
     private User owner;
     private Item item;
     private ItemRequest itemRequest;
 
     @BeforeEach
     void setUp() {
-        booker = new User();
+        User booker = new User();
         booker.setName("Чича");
         booker.setEmail("koti@yandex.ru");
         userRepository.save(booker);
