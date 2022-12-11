@@ -50,10 +50,10 @@ class ItemServiceImplTestIntegration {
 
     @Test
     void createTest() {
-        itemService.create(itemDtoInput, ownerNew.getId());
+        ItemDtoOutput itemDtoOutput = itemService.create(itemDtoInput, ownerNew.getId());
 
         TypedQuery<Item> query = em.createQuery("select i from Item i where i.id = :id", Item.class);
-        Item item = query.setParameter("id", 1L)
+        Item item = query.setParameter("id", itemDtoOutput.getId())
                 .getSingleResult();
 
         assertThat(item.getId(), notNullValue());
