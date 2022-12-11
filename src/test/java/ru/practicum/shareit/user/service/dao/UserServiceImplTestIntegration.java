@@ -39,10 +39,10 @@ class UserServiceImplTestIntegration {
 
     @Test
     void create() {
-        service.create(user1);
+        User userNew = service.create(user1);
 
         TypedQuery<User> query = em.createQuery("select u from User u where u.id = :id", User.class);
-        User user = query.setParameter("id", 1L)
+        User user = query.setParameter("id", userNew.getId())
                 .getSingleResult();
 
         assertThat(user1.getId(), notNullValue());
