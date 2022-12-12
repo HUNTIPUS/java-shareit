@@ -17,6 +17,7 @@ import ru.practicum.shareit.item.mapper.ItemMapper;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.repository.ItemRepository;
 import ru.practicum.shareit.item.service.dal.ItemService;
+import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.repository.RequestRepository;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.service.dal.UserService;
@@ -49,9 +50,7 @@ public class ItemServiceImpl implements ItemService {
         User user = userService.getById(userId);
         Item item = itemRepository.save(ItemMapper.toItem(itemDto));
         item.setOwner(user);
-        if (itemDto.getRequestId() != null) {
-            item.setRequest(requestRepository.getReferenceById(itemDto.getRequestId()));
-        }
+        appendRequest(itemDto, item);
         return ItemMapper.toItemDto(item);
     }
 
@@ -62,7 +61,7 @@ public class ItemServiceImpl implements ItemService {
         Item item = getByIdForItem(itemDto.getId());
         Item itemNew = ItemMapper.toItem(itemDto);
         if (item.getOwner().getId().equals(userId)) {
-            itemNew = updateItemIfParamIsNull(itemNew);
+            itemNew = updateItemIfParamIsNull(appendRequest(itemDto, itemNew));
             return getById(itemNew.getId(), itemNew.getOwner().getId());
         } else {
             throw new ObjectExcistenceException("У этого инструмента другой владелец");
@@ -120,7 +119,7 @@ public class ItemServiceImpl implements ItemService {
                 .collect(groupingBy(Booking::getItem, toList()));
     }
 
-    public ItemDtoOutput appendBookingToItem(Item item, List<Booking> bookings) {
+    private ItemDtoOutput appendBookingToItem(Item item, List<Booking> bookings) {
         ItemDtoOutput itemDto = ItemMapper.toItemDto(item);
         LocalDateTime now = LocalDateTime.now();
         Booking lastBooking = bookings.stream()
@@ -172,6 +171,15 @@ public class ItemServiceImpl implements ItemService {
         }
         if (item.getRequest() != null) {
             itemNew.setRequest(item.getRequest());
+        }
+        return itemNew;
+    }
+
+    private Item appendRequest(ItemDtoInput itemDto, Item itemNew) {
+        if (itemDto.getRequestId() != null) {
+            ItemRequest itemRequest = requestRepository.findById(itemDto.getRequestId())
+                    .orElseThrow(() -> new ObjectExcistenceException("Такого запроса не существует"));
+            itemNew.setRequest(itemRequest);
         }
         return itemNew;
     }

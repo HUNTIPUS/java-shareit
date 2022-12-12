@@ -13,33 +13,11 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @JsonTest
-class ItemDtoJsonTest {
+class ItemDtoInputTest {
     @Autowired
     private JacksonTester<ItemDtoOutput> jsonOutput;
     @Autowired
     private JacksonTester<ItemDtoInput> jsonInput;
-
-    @Test
-    void testItemDto() throws Exception {
-        ItemDtoOutput itemDtoOutput = ItemDtoOutput.builder()
-                .id(1L)
-                .name("Мяч")
-                .description("Мяч для тенниса")
-                .available(true)
-                .requestId(1L)
-                .comments(List.of())
-                .build();
-
-        JsonContent<ItemDtoOutput> result = jsonOutput.write(itemDtoOutput);
-
-        assertThat(result).extractingJsonPathNumberValue("$.id").isEqualTo(1);
-        assertThat(result).extractingJsonPathStringValue("$.name").isEqualTo("Мяч");
-        assertThat(result).extractingJsonPathStringValue("$.description")
-                .isEqualTo("Мяч для тенниса");
-        assertThat(result).extractingJsonPathBooleanValue("$.available").isEqualTo(true);
-        assertThat(result).extractingJsonPathNumberValue("$.requestId").isEqualTo(1);
-        assertThat(result).extractingJsonPathArrayValue("$.comments").isEqualTo(List.of());
-    }
 
     @Test
     void testItemDtoFromJson() throws Exception {

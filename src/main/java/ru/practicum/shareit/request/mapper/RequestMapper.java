@@ -6,9 +6,6 @@ import ru.practicum.shareit.request.dto.ItemRequestDtoInput;
 import ru.practicum.shareit.request.dto.ItemRequestDtoOutput;
 import ru.practicum.shareit.request.model.ItemRequest;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class RequestMapper {
     public static ItemRequestDtoOutput toRequestDto(ItemRequest request) {
@@ -24,11 +21,5 @@ public class RequestMapper {
         itemRequest.setDescriptionRequest(requestDto.getDescription());
         itemRequest.setCreated(requestDto.getCreated());
         return itemRequest;
-    }
-
-    public static List<ItemRequestDtoOutput> toRequestDtoList(List<ItemRequest> requests) {
-        return requests.stream()
-                .map(RequestMapper::toRequestDto)
-                .collect(Collectors.toList());
     }
 }

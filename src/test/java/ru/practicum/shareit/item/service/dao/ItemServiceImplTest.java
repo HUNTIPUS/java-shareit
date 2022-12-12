@@ -14,6 +14,7 @@ import ru.practicum.shareit.booking.repository.BookingRepository;
 import ru.practicum.shareit.booking.status.Status;
 import ru.practicum.shareit.comments.model.Comment;
 import ru.practicum.shareit.comments.repository.CommentRepository;
+import ru.practicum.shareit.exeption.exeptions.ObjectExcistenceException;
 import ru.practicum.shareit.item.dto.ItemDtoInput;
 import ru.practicum.shareit.item.dto.ItemDtoOutput;
 import ru.practicum.shareit.item.model.Item;
@@ -46,6 +47,7 @@ class ItemServiceImplTest {
     private CommentRepository commentRepository;
     @Mock
     private RequestRepository requestRepository;
+    private User requestor;
     private User owner;
     private Item item;
     private ItemRequest request;
@@ -58,7 +60,7 @@ class ItemServiceImplTest {
         itemService = new ItemServiceImpl(itemRepository, userService, bookingRepository, commentRepository,
                 requestRepository);
 
-        User requestor = new User();
+        requestor = new User();
         requestor.setId(1L);
         requestor.setName("Чича");
         requestor.setEmail("koti@yandex.ru");
@@ -112,8 +114,8 @@ class ItemServiceImplTest {
                 .when(itemRepository.save(any()))
                 .thenReturn(item);
         Mockito
-                .when(requestRepository.getReferenceById(anyLong()))
-                .thenReturn(request);
+                .when(requestRepository.findById(anyLong()))
+                .thenReturn(Optional.of(request));
 
         ItemDtoOutput itemDtoOutput = itemService.create(itemDtoInput, owner.getId());
         Assertions.assertEquals(item.getId(), itemDtoOutput.getId());
@@ -134,6 +136,12 @@ class ItemServiceImplTest {
                 .when(userService.getById(anyLong()))
                 .thenReturn(owner);
         Mockito
+                .when(userService.getById(anyLong()))
+                .thenReturn(requestor);
+        Mockito
+                .when(requestRepository.findById(anyLong()))
+                .thenReturn(Optional.of(request));
+        Mockito
                 .when(itemRepository.findById(anyLong()))
                 .thenReturn(Optional.of(item));
         Mockito
@@ -143,17 +151,38 @@ class ItemServiceImplTest {
         Mockito
                 .when(commentRepository.findCommentForItems(items))
                 .thenReturn(anyList());
+
         ItemDtoInput itemDtoInputNew = new ItemDtoInput();
         itemDtoInputNew.setId(item.getId());
         itemDtoInputNew.setName("Mяч");
         itemDtoInputNew.setDescription(item.getDescription());
         itemDtoInputNew.setAvailable(item.getAvailable());
+        itemDtoInputNew.setRequestId(request.getId());
 
         ItemDtoOutput itemDtoOutput = itemService.update(itemDtoInputNew, owner.getId());
         Assertions.assertEquals(item.getId(), itemDtoOutput.getId());
         Assertions.assertEquals(item.getName(), itemDtoOutput.getName());
         Assertions.assertEquals(item.getDescription(), itemDtoOutput.getDescription());
         Assertions.assertEquals(item.getAvailable(), itemDtoOutput.getAvailable());
+        Assertions.assertEquals(request.getId(), itemDtoOutput.getRequestId());
+    }
+
+    @Test
+    void updateWithOtherUserTest() {
+        item.setOwner(owner);
+        Mockito
+                .when(userService.getById(anyLong()))
+                .thenReturn(owner);
+        Mockito
+                .when(itemRepository.findById(anyLong()))
+                .thenReturn(Optional.of(item));
+        Mockito
+                .when(userService.getById(anyLong()))
+                .thenReturn(requestor);
+        ObjectExcistenceException ex = Assertions.assertThrows(ObjectExcistenceException.class,
+                () -> {itemService.update(itemDtoInput, requestor.getId());});
+        Assertions.assertEquals("У этого инструмента другой владелец", ex.getMessage());
+
     }
 
     @Test
@@ -197,12 +226,58 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void getAllTest() {
+    void getByIdFromRequestorTest() {
         List<Comment> comments = new ArrayList<>();
         comments.add(comment);
 
         List<Booking> bookings = new ArrayList<>();
         bookings.add(booking);
+
+        item.setOwner(owner);
+        List<Item> items = new ArrayList<>();
+        items.add(item);
+
+        Mockito
+                .when(userService.getById(anyLong()))
+                .thenReturn(owner);
+        Mockito
+                .when(itemRepository.findById(anyLong()))
+                .thenReturn(Optional.of(item));
+        Mockito
+                .when(bookingRepository.findApprovedForItems(
+                        items, Sort.by(DESC, "start")))
+                .thenReturn(bookings);
+        Mockito
+                .when(commentRepository.findCommentForItems(items))
+                .thenReturn(comments);
+
+        ItemDtoOutput itemDtoOutput = itemService.getById(item.getId(), requestor.getId());
+        Assertions.assertEquals(item.getId(), itemDtoOutput.getId());
+        Assertions.assertEquals(item.getName(), itemDtoOutput.getName());
+        Assertions.assertEquals(item.getDescription(), itemDtoOutput.getDescription());
+        Assertions.assertEquals(item.getAvailable(), itemDtoOutput.getAvailable());
+        Assertions.assertEquals(comments.get(0).getId(), itemDtoOutput.getComments().get(0).getId());
+        Assertions.assertEquals(comments.get(0).getText(), itemDtoOutput.getComments().get(0).getText());
+        Assertions.assertEquals(comments.get(0).getAuthor().getName(),
+                itemDtoOutput.getComments().get(0).getAuthorName());
+        Assertions.assertEquals(comments.get(0).getCreated(), itemDtoOutput.getComments().get(0).getCreated());
+    }
+
+    @Test
+    void getAllTest() {
+        List<Comment> comments = new ArrayList<>();
+        comments.add(comment);
+
+        Booking bookingNext = new Booking();
+        bookingNext.setId(1L);
+        bookingNext.setStart(LocalDateTime.of(2022, 12, 15, 8, 0));
+        bookingNext.setEnd(LocalDateTime.of(2022, 12, 17, 8, 0));
+        bookingNext.setStatus(Status.WAITING);
+        bookingNext.setBooker(requestor);
+        bookingNext.setItem(item);
+        List<Booking> bookings = new ArrayList<>();
+        bookings.add(booking);
+        bookings.add(bookingNext);
 
         item.setOwner(owner);
         List<Item> items = new ArrayList<>();
@@ -232,9 +307,14 @@ class ItemServiceImplTest {
         Assertions.assertEquals(comments.get(0).getText(), itemDtoOutputList.get(0).getComments().get(0).getText());
         Assertions.assertEquals(comments.get(0).getAuthor().getName(),
                 itemDtoOutputList.get(0).getComments().get(0).getAuthorName());
-        Assertions.assertEquals(comments.get(0).getCreated(), itemDtoOutputList.get(0).getComments().get(0).getCreated());
+        Assertions.assertEquals(comments.get(0).getCreated(), itemDtoOutputList.get(0).getComments().get(0)
+                .getCreated());
         Assertions.assertEquals(bookings.get(0).getId(), itemDtoOutputList.get(0).getLastBooking().getId());
-        Assertions.assertEquals(bookings.get(0).getBooker().getId(), itemDtoOutputList.get(0).getLastBooking().getBookerId());
+        Assertions.assertEquals(bookings.get(0).getBooker().getId(), itemDtoOutputList.get(0).getLastBooking()
+                .getBookerId());
+        Assertions.assertEquals(bookings.get(1).getId(), itemDtoOutputList.get(0).getNextBooking().getId());
+        Assertions.assertEquals(bookings.get(1).getBooker().getId(), itemDtoOutputList.get(0).getNextBooking()
+                .getBookerId());
     }
 
     @Test

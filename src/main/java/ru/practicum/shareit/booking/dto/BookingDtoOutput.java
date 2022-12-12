@@ -20,14 +20,12 @@ public class BookingDtoOutput {
     private Booker booker;
 
     private Item item;
-
-    @Data
+    @Getter
     @AllArgsConstructor
     public static class Booker {
         private long id;
     }
-
-    @Data
+    @Getter
     @AllArgsConstructor
     public static class Item {
         private long id;

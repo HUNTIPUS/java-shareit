@@ -66,8 +66,8 @@ class BookingControllerTest {
 
         booking = new Booking();
         booking.setId(1L);
-        booking.setStart(LocalDateTime.of(2022, 12, 12, 8, 0, 1));
-        booking.setEnd(LocalDateTime.of(2022, 12, 13, 8, 0, 1));
+        booking.setStart(LocalDateTime.of(2022, 12, 15, 8, 0, 1));
+        booking.setEnd(LocalDateTime.of(2022, 12, 16, 8, 0, 1));
         booking.setStatus(Status.WAITING);
         booking.setBooker(booker);
         booking.setItem(item);

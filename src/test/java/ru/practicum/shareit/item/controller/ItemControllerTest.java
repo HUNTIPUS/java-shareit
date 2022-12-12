@@ -270,6 +270,23 @@ class ItemControllerTest {
     }
 
     @Test
+    void getByWithoutText() throws Exception {
+        Mockito
+                .when(itemService.getByText("", 0, 1))
+                .thenReturn(List.of());
+
+        mvc.perform(get("/items/search")
+                        .param("text", "")
+                        .param("from", "0")
+                        .param("size", "1")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", is(List.of()), List.class));
+    }
+
+    @Test
     void createComment() throws Exception {
         CommentDto commentDto = CommentMapper.toCommentDto(comment);
         Mockito

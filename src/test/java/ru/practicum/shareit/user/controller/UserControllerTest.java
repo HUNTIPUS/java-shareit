@@ -17,10 +17,12 @@ import ru.practicum.shareit.user.service.dal.UserService;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -117,16 +119,13 @@ class UserControllerTest {
 
     @Test
     void deleteById() throws Exception {
-        List<User> users = new ArrayList<>();
-        Mockito
-                .when(userService.getAll())
-                .thenReturn(users);
+        Mockito.when(userService.getById(userDto.getId()))
+                .thenReturn(UserMapper.toUser(userDto));
 
-        mvc.perform(get("/users")
+        mvc.perform(delete("/users/1")
                         .characterEncoding(StandardCharsets.UTF_8)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", is(List.of())));
+                .andExpect(status().isOk());
     }
 }
