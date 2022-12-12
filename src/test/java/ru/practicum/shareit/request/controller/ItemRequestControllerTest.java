@@ -33,13 +33,10 @@ class ItemRequestControllerTest {
 
     @Autowired
     ObjectMapper mapper;
-
     @MockBean
     RequestService requestService;
-
     @Autowired
     private MockMvc mvc;
-
     private User owner;
     private User requestor;
     private Item item;

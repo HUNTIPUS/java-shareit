@@ -17,12 +17,10 @@ import ru.practicum.shareit.user.service.dal.UserService;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -32,13 +30,10 @@ class UserControllerTest {
 
     @Autowired
     ObjectMapper mapper;
-
     @MockBean
     UserService userService;
-
     @Autowired
     private MockMvc mvc;
-
     private UserDto userDto;
 
     @BeforeEach

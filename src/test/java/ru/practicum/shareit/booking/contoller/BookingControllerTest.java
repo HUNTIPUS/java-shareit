@@ -30,13 +30,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = BookingController.class)
 class BookingControllerTest {
-
     @Autowired
     ObjectMapper mapper;
-
     @MockBean
     BookingService bookingService;
-
     @Autowired
     private MockMvc mvc;
     private User booker;
