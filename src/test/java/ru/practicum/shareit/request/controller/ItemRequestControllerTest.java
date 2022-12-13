@@ -176,6 +176,18 @@ class ItemRequestControllerTest {
     }
 
     @Test
+    void getAllFail() throws Exception {
+        mvc.perform(get("/requests/all")
+                        .header("X-Sharer-User-Id", owner.getId())
+                        .param("from", "-1")
+                        .param("size", "1")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void getById() throws Exception {
         ItemRequestDtoOutput itemRequestDtoOutput = RequestMapper.toRequestDto(request);
         ItemRequestDtoOutput.Item item1 = new ItemRequestDtoOutput.Item();

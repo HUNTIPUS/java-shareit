@@ -28,6 +28,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+
 @WebMvcTest(controllers = BookingController.class)
 class BookingControllerTest {
     @Autowired
@@ -38,7 +39,6 @@ class BookingControllerTest {
     private MockMvc mvc;
     private User booker;
     private User owner;
-    private Item item;
     private Booking booking;
     private BookingDtoInput bookingDtoInput;
 
@@ -54,7 +54,7 @@ class BookingControllerTest {
         owner.setName("Юля");
         owner.setEmail("jul@yandex.ru");
 
-        item = new Item();
+        Item item = new Item();
         item.setId(1L);
         item.setOwner(owner);
         item.setName("Мячик");
@@ -198,5 +198,19 @@ class BookingControllerTest {
                 .andExpect(jsonPath("$[0].booker.id", is(bookingDtoOutput.getBooker().getId()), Long.class))
                 .andExpect(jsonPath("$[0].item.id", is(bookingDtoOutput.getItem().getId()), Long.class))
                 .andExpect(jsonPath("$[0].item.name", is(bookingDtoOutput.getItem().getName())));
+    }
+
+    @Test
+    void getAllByBookerFail() throws Exception {
+
+        mvc.perform(get("/bookings")
+                        .header("X-Sharer-User-Id", booker.getId())
+                        .param("state", "ALL")
+                        .param("from", "-1")
+                        .param("size", "0")
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 }
