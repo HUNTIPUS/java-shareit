@@ -17,5 +17,5 @@ public class ItemRequestDtoInput {
     private Long requestorId;
     @NotBlank(groups = {Create.class})
     private String description;
-    private LocalDateTime created = LocalDateTime.now(Clock.system(ZoneId.of("Europe/Moscow")));
+    private LocalDateTime created = LocalDateTime.now();
 }
