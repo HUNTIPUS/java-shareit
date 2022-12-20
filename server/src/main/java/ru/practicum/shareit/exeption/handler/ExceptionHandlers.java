@@ -11,8 +11,6 @@ import ru.practicum.shareit.exeption.exeptions.ObjectExcistenceException;
 import ru.practicum.shareit.exeption.exeptions.ValidationException;
 import ru.practicum.shareit.exeption.response.ErrorResponse;
 
-import javax.validation.ConstraintViolationException;
-
 @RestControllerAdvice
 @Slf4j
 public class ExceptionHandlers {

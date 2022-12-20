@@ -6,8 +6,6 @@ import ru.practicum.shareit.booking.dto.BookingDtoInput;
 import ru.practicum.shareit.booking.dto.BookingDtoOutput;
 import ru.practicum.shareit.booking.service.dal.BookingService;
 
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
