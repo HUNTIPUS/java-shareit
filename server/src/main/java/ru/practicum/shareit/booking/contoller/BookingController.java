@@ -50,9 +50,9 @@ public class BookingController {
     @GetMapping()
     public List<BookingDtoOutput> getAllByBooker(@RequestParam(value = "state", defaultValue = "ALL") String state,
                                                  @RequestHeader(USER_ID) Long userId,
-                                                 @PositiveOrZero @RequestParam(value = "from",
+                                                 @RequestParam(value = "from",
                                                          defaultValue = "0") Integer from,
-                                                 @Positive @RequestParam(value = "size",
+                                                 @RequestParam(value = "size",
                                                          defaultValue = "20") Integer size) {
         return bookingService.getAllByBooker(userId, state, from, size);
     }

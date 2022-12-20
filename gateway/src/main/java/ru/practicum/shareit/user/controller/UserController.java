@@ -29,10 +29,13 @@ public class UserController {
     @PatchMapping("/{id}")
     public ResponseEntity<Object> update(@PathVariable("id") @Positive Long userId,
                                          @RequestBody @Validated(Update.class) UserDto userDto) {
-
-        log.info("Пользователь обновился");
-        userDto.setId(userId);
-        return userClient.update(userDto, userId);
+        if (userDto == null) {
+            return ResponseEntity.badRequest().build();
+        } else {
+            userDto.setId(userId);
+            log.info("Пользователь обновился");
+            return userClient.update(userDto, userId);
+        }
     }
 
     @GetMapping("/{id}")

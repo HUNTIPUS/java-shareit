@@ -6,6 +6,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.client.BookingClient;
 import ru.practicum.shareit.booking.dto.BookingDtoInput;
+import ru.practicum.shareit.booking.status.State;
 import ru.practicum.shareit.user.valid.Create;
 
 import javax.validation.constraints.Positive;
@@ -46,7 +47,9 @@ public class BookingController {
                                                         defaultValue = "0") Integer from,
                                                 @Positive @RequestParam(value = "size",
                                                         defaultValue = "20") Integer size) {
+        State.States.getState(state);
         return bookingClient.getAllByOwner(userId, state, from, size);
+
     }
 
     @GetMapping()
@@ -56,6 +59,8 @@ public class BookingController {
                                                          defaultValue = "0") Integer from,
                                                  @Positive @RequestParam(value = "size",
                                                          defaultValue = "20") Integer size) {
+
+        State.States.getState(state);
         return bookingClient.getAllByBooker(userId, state, from, size);
     }
 

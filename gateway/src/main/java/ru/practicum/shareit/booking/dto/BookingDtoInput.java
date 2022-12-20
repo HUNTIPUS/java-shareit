@@ -2,6 +2,7 @@ package ru.practicum.shareit.booking.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.booking.valid.StartBeforeEndDateValid;
 import ru.practicum.shareit.user.valid.Create;
 
 import javax.validation.constraints.Future;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
+@StartBeforeEndDateValid
 public class BookingDtoInput {
 
     private Long id;

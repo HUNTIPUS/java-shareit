@@ -14,6 +14,7 @@ import ru.practicum.shareit.user.valid.Update;
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
+import java.util.List;
 
 @RestController
 @RequestMapping("/items")
@@ -55,7 +56,11 @@ public class ItemController {
     public ResponseEntity<Object> getByText(@RequestParam("text") String text,
                                             @PositiveOrZero @RequestParam(value = "from", defaultValue = "0") Integer from,
                                             @Positive @RequestParam(value = "size", defaultValue = "20") Integer size) {
-        return itemClient.getByText(text.toLowerCase(), from, size);
+        if (!text.isBlank()) {
+            return itemClient.getByText(text.toLowerCase(), from, size);
+        } else {
+            return ResponseEntity.ok().body(List.of());
+        }
     }
 
     @PostMapping("/{itemId}/comment")
